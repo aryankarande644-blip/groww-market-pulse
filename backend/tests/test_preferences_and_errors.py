@@ -44,3 +44,17 @@ def test_health_endpoint(client):
     resp = client.get("/health")
     assert resp.status_code == 200
     assert resp.json()["status"] == "ok"
+
+
+def test_preferences_browser_navigation_serves_spa(client, tmp_path, monkeypatch):
+    from app import main
+
+    dist = tmp_path / "dist"
+    dist.mkdir()
+    (dist / "index.html").write_text("<!doctype html><title>Market Pulse</title>")
+    monkeypatch.setattr(main, "FRONTEND_DIR", dist)
+
+    resp = client.get("/preferences", headers={"Accept": "text/html"})
+    assert resp.status_code == 200
+    assert "text/html" in resp.headers["content-type"]
+    assert "Market Pulse" in resp.text

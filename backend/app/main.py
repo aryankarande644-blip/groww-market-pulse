@@ -46,3 +46,21 @@ if FRONTEND_DIR.exists():
         if file_path.is_file():
             return FileResponse(file_path)
         return FileResponse(FRONTEND_DIR / "index.html")
+
+
+@app.middleware("http")
+async def serve_spa_for_shadowed_routes(request: Request, call_next):
+    """Serve the SPA for browser navigations whose path collides with an API route.
+
+    ``GET /preferences`` is both an API endpoint and a client-side route. API
+    clients send ``Accept: application/json`` (or ``*/*``), while browser
+    navigations send ``Accept: text/html``, so only the latter get the SPA.
+    """
+    if (
+        FRONTEND_DIR.exists()
+        and request.method == "GET"
+        and request.url.path == "/preferences"
+        and "text/html" in request.headers.get("accept", "")
+    ):
+        return FileResponse(FRONTEND_DIR / "index.html")
+    return await call_next(request)
