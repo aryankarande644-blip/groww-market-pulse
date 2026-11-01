@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body, #root {
+    height: 100%;
+  }
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  h1, h2, h3, .font-display {
+    font-family: 'IBM Plex Serif', Georgia, serif;
+  }
+  ::selection {
+    background: #0B0E14;
+    color: #F7F7F5;
+  }
+}
+
+@layer utilities {
+  .num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-variant-numeric: tabular-nums;
+  }
+}
